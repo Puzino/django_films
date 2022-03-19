@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 
 from .forms import ReviewForm
-from .models import Movie
+from .models import Movie, Category
 
 
 class MovieViews(ListView):
@@ -11,6 +11,11 @@ class MovieViews(ListView):
 
     model = Movie
     queryset = Movie.objects.filter(draft=False)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['categories'] = Category.objects.all()
+        return context
 
 
 class MovieDetailView(DetailView):
