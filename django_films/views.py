@@ -3,10 +3,20 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 
 from .forms import ReviewForm
-from .models import Movie, Category, Actor
+from .models import Movie, Category, Actor, Genre
 
 
-class MovieViews(ListView):
+class GenreYear:
+    """Жанры и года фильмов"""
+
+    def get_genres(self):
+        return Genre.objects.all()
+
+    def get_years(self):
+        return Movie.objects.filter(draft=False).values('year')
+
+
+class MovieViews(GenreYear, ListView):
     """Список фильмов"""
 
     model = Movie
@@ -18,7 +28,7 @@ class MovieViews(ListView):
         return context
 
 
-class MovieDetailView(DetailView):
+class MovieDetailView(GenreYear, DetailView):
     """Полное описание фильма"""
     model = Movie
     slug_field = 'url'
@@ -39,8 +49,16 @@ class AddReview(View):
         return redirect(movie.get_absolute_url())
 
 
-class ActorView(DetailView):
+class ActorView(GenreYear, DetailView):
     """Вывод страницы акторов и режисёров"""
     model = Actor
     template_name = 'django_films/actor.html'
     slug_field = 'name'
+
+
+class FilterMoviesView(GenreYear, ListView):
+    """Фильтр фильмов"""
+
+    def get_queryset(self):
+        queryset = Movie.objects.filter(year__in=self.request.GET.getlist('year'))
+        return queryset
