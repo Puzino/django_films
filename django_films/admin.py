@@ -126,7 +126,8 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
-    list_display = ('movie', 'ip')
+    """Рейтинг"""
+    list_display = ('star', 'movie', 'ip')
 
 
 @admin.register(MovieShots)
