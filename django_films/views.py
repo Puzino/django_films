@@ -1,11 +1,11 @@
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import redirect, HttpResponse
-from django.views.generic import ListView, DetailView
+from django.shortcuts import HttpResponse, redirect
+from django.views.generic import DetailView, ListView
 from django.views.generic.base import View
 
-from .forms import ReviewForm, RatingForm
-from .models import Movie, Category, Actor, Genre, Rating
+from .forms import RatingForm, ReviewForm
+from .models import Actor, Category, Genre, Movie, Rating
 
 
 class GenreYear:
@@ -80,6 +80,7 @@ class FilterMoviesView(GenreYear, ListView):
         context['genre'] = ''.join([f'genre={x}&' for x in self.request.GET.getlist('genre')])
         return context
 
+
 class JsonFilterMoviesView(ListView):
     """Фильтрация фильмов в Json"""
 
@@ -117,3 +118,17 @@ class AddStarRating(View):
             return HttpResponse(status=201)
         else:
             return HttpResponse(status=400)
+
+
+class Search(ListView):
+    """поиск фильмов"""
+
+    paginate_by = 3
+
+    def get_queryset(self):
+        return Movie.objects.filter(title__icontains=self.request.GET.get('q'))
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['q'] = f'{self.request.GET.get("q")}&'
+        return context
