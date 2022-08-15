@@ -1,29 +1,78 @@
+from django.core.management.base import BaseCommand
 import requests
-from bs4 import BeautifulSoup
+from django_films.models import  Movie
 
 
-def handler():
-    url = 'https://www.kinonews.ru/movies_waitings/'
-    responce = requests.get(url)
+class Command(BaseCommand):
+    help = 'Parse Privatbank archive rates'  # noqa: A003, VNE003
 
-    soup = BeautifulSoup(responce.text, 'html.parser')
-    divbody = soup.find_all('div', class_="relative")
+    def handle(self, *args, **options):
+        head = {
+            'X-API-KEY': '538d2c9d-0ff2-449a-a865-613e7f96d144',
+            'Content-Type': 'application/json',
+        }
+        for i in range(300, 310):
+            url = f'https://kinopoiskapiunofficial.tech/api/v2.2/films/{i}'
 
-    links = []
-    for i in divbody:
-        try:
-            a = i.find('a', class_='titlefilm').get('href')
-            links.append(f'https://www.kinonews.ru{a}')
-        except:
-            pass
+            response = requests.get(url, headers=head).json()
 
-    for x in links[:1]:
-        link_movie = requests.get(x)
-        link_soup = BeautifulSoup(link_movie.text, 'html.parser')
-        link_div = link_soup.find('div', class_='block-page-new')
-        name_movie = link_div.find('h1', class_="film").text
-        text_movie = link_div.find('div', class_="textart15").text
-        print(text_movie)
-        print(link_div)
+            nameRu = response['nameRu']
+            nameOrigina = response['nameOriginal']
+            posterUrl = response['posterUrl']
+            poster_get = requests.get(posterUrl)
+            poster_name = "".join(nameOrigina.split())
+            poster_down = open(f'C:/Users/admin/Documents/django_films/media/movies/{poster_name}.jpg', 'wb')
+            poster_down.write(poster_get.content)
+            poster_down.close()
+            poster_path = 'movies/' + poster_name + '.jpg'
+            year = response['year']
+            description = response['description']
+            slogan = response['slogan']
+            countries = response['countries'][0]['country']
+            genress = response['genres'][0]['genre']
 
-handler()
+            try:
+                Movie.objects.get(
+                    title=nameRu,
+                    tagline=slogan,
+                    description=description,
+                    poster=poster_path,
+                    year=year,
+                    county=countries,
+                    directors=None,
+                    actors=None,
+                    genres=1,
+                    world_premiere=None,
+                    budget=None,
+                    fees_in_usa=None,
+                    fees_in_world=None,
+                    # category=Category.objects.get(id=1, name='Films', description='movie', url='movie',
+                    #                                         description_en='movie', description_ru='movie',
+                    #                                         name_en='Films',
+                    #                                         name_ru='Фильмы'),
+                    url=None,
+                    draft=False
+                )
+            except Movie.DoesNotExist:
+                Movie.objects.create(
+
+                    title=nameRu,
+                    tagline=slogan,
+                    description=description,
+                    poster=poster_path,
+                    year=year,
+                    county=countries,
+                    directors=None,
+                    actors=None,
+                    genres=1,
+                    world_premiere=None,
+                    budget=None,
+                    fees_in_usa=None,
+                    fees_in_world=None,
+                    # category=Category.objects.create(name='Films', description='movie', url='movie',
+                    #                                         description_en='movie', description_ru='movie',
+                    #                                         name_en='Films',
+                    #                                         name_ru='Фильмы'),
+                    url=None,
+                    draft=False
+                )
