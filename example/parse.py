@@ -1,6 +1,8 @@
+import datetime
+
 from django.core.management.base import BaseCommand
 import requests
-from django_films.models import  Movie
+from django_films.models import Movie
 
 
 class Command(BaseCommand):
@@ -34,45 +36,58 @@ class Command(BaseCommand):
             try:
                 Movie.objects.get(
                     title=nameRu,
+                    title_ru=nameRu,
+                    title_en=nameRu,
+
                     tagline=slogan,
+                    tagline_ru=slogan,
+                    tagline_en=slogan,
+
                     description=description,
+                    description_ru=description,
+                    description_en=description,
+
                     poster=poster_path,
                     year=year,
                     county=countries,
-                    directors=None,
-                    actors=None,
-                    genres=1,
-                    world_premiere=None,
-                    budget=None,
-                    fees_in_usa=None,
-                    fees_in_world=None,
-                    # category=Category.objects.get(id=1, name='Films', description='movie', url='movie',
-                    #                                         description_en='movie', description_ru='movie',
-                    #                                         name_en='Films',
-                    #                                         name_ru='Фильмы'),
-                    url=None,
-                    draft=False
+                    county_ru=countries,
+                    county_en=countries,
+
+                    world_premiere=datetime.date(2023, 12, 12),
+                    budget=0,
+                    fees_in_usa=0,
+                    fees_in_world=0,
+                    category_id=1,
+
+                    url=slogan,
+                    draft=False,
                 )
             except Movie.DoesNotExist:
                 Movie.objects.create(
-
                     title=nameRu,
+                    title_ru=nameRu,
+                    title_en=nameRu,
+
                     tagline=slogan,
+                    tagline_ru=slogan,
+                    tagline_en=slogan,
+
                     description=description,
+                    description_ru=description,
+                    description_en=description,
+
                     poster=poster_path,
                     year=year,
                     county=countries,
-                    directors=None,
-                    actors=None,
-                    genres=1,
-                    world_premiere=None,
-                    budget=None,
-                    fees_in_usa=None,
-                    fees_in_world=None,
-                    # category=Category.objects.create(name='Films', description='movie', url='movie',
-                    #                                         description_en='movie', description_ru='movie',
-                    #                                         name_en='Films',
-                    #                                         name_ru='Фильмы'),
-                    url=None,
-                    draft=False
+                    county_ru=countries,
+                    county_en=countries,
+
+                    world_premiere=datetime.date(2023, 12, 12),
+                    budget=0,
+                    fees_in_usa=0,
+                    fees_in_world=0,
+                    category_id=1,
+
+                    url=slogan,
+                    draft=False,
                 )

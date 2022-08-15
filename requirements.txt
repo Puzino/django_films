@@ -1,5 +1,7 @@
 asgiref
 Django
+django-extensions
+ipython
 django-ckeditor
 django-js-asset
 Pillow

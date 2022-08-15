@@ -23,7 +23,7 @@ class MovieViews(GenreYear, ListView):
 
     model = Movie
     queryset = Movie.objects.filter(draft=False)
-    paginate_by = 1
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
